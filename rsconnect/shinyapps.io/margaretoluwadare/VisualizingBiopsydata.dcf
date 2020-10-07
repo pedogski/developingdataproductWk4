@@ -1,0 +1,13 @@
+name: VisualizingBiopsydata
+title: VisualizingBiopsydata
+username:
+account: margaretoluwadare
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2954531
+bundleId: 3708994
+url: https://margaretoluwadare.shinyapps.io/VisualizingBiopsydata/
+when: 1601998119.3095
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: analytics.Rdata.csv|first.md|first.Rpres|OK.R
