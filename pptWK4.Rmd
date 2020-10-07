@@ -53,7 +53,7 @@ library(rlang)
 ```{r data preaparation, echo=TRUE}
 Biopsy <- attach(biopsy)
 
-names(biopsy) <- c("ID", "age", "mnp", "ts", "inv", "ndc", "deM", "breast", "brtq", "irat", "class" )
+names(biopsy) <- c("ID", "age", "mnp", "ts", "inv", "ndc", "deM", "breast", "brtq", "irat", "class")
 
 ```
 
