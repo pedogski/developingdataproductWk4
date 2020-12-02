@@ -1,65 +1,16 @@
----
-title: "VISUALIZATION OF THE BIOPSY DATA USING R"
-author: "Oluwadare, Margaret"
-date: "10/6/2020"
-output:
-  beamer_presentation: default
-  slidy_presentation: default
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = TRUE, echo = TRUE, results = "hide", message = FALSE, warning = FALSE)
-```
-OVERVIEW
-========
-This RStudio shiny application is developed as a part of final project in the Developing Data Products course in Coursera Data Science Specialization track offered by John Hopkin University. The application visualizes the `biospy` data. It is an adapted app from https://rviews.rstudio.com/2018/09/20/shiny-r2d3/
-
-The project includes:
-
-- A D3 code using `r2d3` containing canvas size functions, attributes, `The on` functions track named events, `The click` function, and `The mouseover and mouseout`.  
-- A R/shiny code 
-The app is hosted at: https://margaretoluwadare.shinyapps.io/VisualizingBiopsydata/
-
----
-
-APPLICATION WIDGET USED:
-=======================
-This application the following widgets listed below:
-
-- r2d3 scripts: containing canvas size functions, attributes, `The on` functions track named events, `The click` function, and `The mouseover and mouseout`. It also contain the `select botton`, 
-
-- `r2d3_file <- tempfile()` and then `writeLines(r2d3_script, r2d3_file)` is used to keep the D3 and R code in one location.
-- `Attributes (.attr)` which are named after each varaible.
--`The on()` functions track named events e.g. click, mouseover, and mouseout.
-
-OPERATIONS IN THE APP AND AOUTPUT
-=================================
-The reactivity of the shiny application widgets is controlled by using a `Select Button`. Based on user variable selection and data input, and using the simple`r2d3 code` the application displays:
-
-- Varaibales of data read by the user
-- barplot of the chosen variable
-- observed values of the varaible in relation to other varaible in the data
-
-```{r Environment preparation}
-library("knitr")
 library(shiny)
+library(MASS)
+library(RCurl)
+library(htmlwidgets)
+library(htmltools)
 library(dplyr)
 library(r2d3)
 library(forcats)
-library(MASS)
 library(DT)
 library(rlang)
-```
-```{r data preaparation, echo=TRUE}
-Biopsy <- attach(biopsy)
 
-names(biopsy) <- c("ID", "age", "mnp", "ts", "inv", "ndc", "deM", "breast", "brtq", "irat", "class")
+Biopsy <- read.csv("Biopsy.csv", header = TRUE)
 
-```
-
----
-
-```{r r2d3 scrip}
 r2d3_script <- "
 // !preview r2d3 data= data.frame(y = 0.1, ylabel = '1%', fill = '#E69F00', mouseover = 'green', label = 'one', id = 1)
 function svg_height() {return parseInt(svg.style('height'))}
@@ -128,11 +79,7 @@ totals.exit().remove();
 "
 r2d3_file <- tempfile()
 writeLines(r2d3_script, r2d3_file)
-```
 
----
-
-```{r Application UI}
 ui <- fluidPage(
   selectInput("var", "Variable",
               list("ID", "age", "mnp", "ts", "inv", "ndc", "deM", "breast", "brtq", "irat", "class"),
@@ -141,12 +88,10 @@ ui <- fluidPage(
   DT::dataTableOutput("table"),
   textInput("val", "Value", "class")
 )
-```
 
-```{r Application server}
 server <- function(input, output, session) {
   output$d3 <- renderD3({
-   biopsy %>%
+   Biopsy %>%
       mutate(label = !!sym(input$var)) %>%
       group_by(label) %>%
       tally() %>%
@@ -163,13 +108,11 @@ server <- function(input, output, session) {
     updateTextInput(session, "val", value = input$bar_clicked)
   })
   output$table <- renderDataTable({
-    biopsy %>%
+    Biopsy %>%
       filter(!!sym(input$var) == input$val) %>%
       datatable()
   })
 }
 
 shinyApp(ui = ui, server = server)
-```
 
----

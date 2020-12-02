@@ -1,12 +1,3 @@
-library(shiny)
-library(dplyr)
-library(r2d3)
-library(forcats)
-library(DT)
-library(rlang)
-
-names(biopsy) <- c("ID", "age", "mnp", "ts", "inv", "ndc", "deM", "breast", "brtq", "irat", "class" )
-
 r2d3_script <- "
 // !preview r2d3 data= data.frame(y = 0.1, ylabel = '1%', fill = '#E69F00', mouseover = 'green', label = 'one', id = 1)
 function svg_height() {return parseInt(svg.style('height'))}
@@ -75,39 +66,3 @@ totals.exit().remove();
 "
 r2d3_file <- tempfile()
 writeLines(r2d3_script, r2d3_file)
-
-ui <- fluidPage(
-  selectInput("var", "Variable",
-              list("ID", "age", "mnp", "ts", "inv", "ndc", "deM", "breast", "brtq", "irat", "class"),
-              selected = "class"),
-  d3Output("d3"),
-  DT::dataTableOutput("table"),
-  textInput("val", "Value", "class")
-)
-
-server <- function(input, output, session) {
-  output$d3 <- renderD3({
-   biopsy %>%
-      mutate(label = !!sym(input$var)) %>%
-      group_by(label) %>%
-      tally() %>%
-      arrange(desc(n)) %>%
-      mutate(
-        y = n,
-        ylabel = prettyNum(n, big.mark = ","),
-        fill = ifelse(label != input$val, "#E69F00", "red"),
-        mouseover = "#0072B2"
-      ) %>%
-      r2d3(r2d3_file)
-  })
-  observeEvent(input$bar_clicked, {
-    updateTextInput(session, "val", value = input$bar_clicked)
-  })
-  output$table <- renderDataTable({
-    biopsy %>%
-      filter(!!sym(input$var) == input$val) %>%
-      datatable()
-  })
-}
-
-shinyApp(ui = ui, server = server)

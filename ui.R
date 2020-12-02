@@ -1,12 +1,15 @@
 library(shiny)
+library(MASS)
+library(RCurl)
+library(htmlwidgets)
+library(htmltools)
 library(dplyr)
 library(r2d3)
 library(forcats)
 library(DT)
 library(rlang)
 
-names(biopsy) <- c("ID", "age", "mnp", "ts", "inv", "ndc", "deM", "breast", "brtq", "irat", "class" )
-
+Biopsy <- read.csv("Biopsy.csv", header = TRUE)
 
 r2d3_script <- "
 // !preview r2d3 data= data.frame(y = 0.1, ylabel = '1%', fill = '#E69F00', mouseover = 'green', label = 'one', id = 1)

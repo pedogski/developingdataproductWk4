@@ -1,6 +1,6 @@
 server <- function(input, output, session) {
   output$d3 <- renderD3({
-    biopsy %>%
+    Biopsy %>%
       mutate(label = !!sym(input$var)) %>%
       group_by(label) %>%
       tally() %>%
@@ -17,8 +17,9 @@ server <- function(input, output, session) {
     updateTextInput(session, "val", value = input$bar_clicked)
   })
   output$table <- renderDataTable({
-    biopsy %>%
+    Biopsy %>%
       filter(!!sym(input$var) == input$val) %>%
       datatable()
   })
 }
+
